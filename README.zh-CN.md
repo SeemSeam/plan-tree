@@ -2,9 +2,11 @@
 
 [English](README.md)
 
+![Plan Tree](assets/plan-tree.jpg)
+
 > 把短期 plans 变成一棵长期稳定、结构化的树。
 
-`plan-tree` 是一个用于长期保存项目规划状态的 Codex skill。它把临时 provider plans、讨论、决策、开放问题、交接状态和验证证据沉淀成一棵 Markdown 规划树，让项目跨会话、跨 agent 推进时不漂移。
+`plan-tree` 是一个通用的 AI planning skill，用于长期保存项目规划状态。它把临时 provider plans、讨论、决策、开放问题、交接状态和验证证据沉淀成一棵 Markdown 规划树，让项目跨会话、跨 agent 推进时不漂移。
 
 ## 核心思想
 
@@ -65,7 +67,7 @@ docs/plantree/
 
 ## 使用方式
 
-最重要的使用方式不是记命令，而是把下面英文规则写进项目记忆文件，例如 `AGENTS.md`、团队 memory 或 Codex memory。之后 provider 会在相关任务中自动使用 `plan-tree`。
+最重要的使用方式不是记命令，而是把下面英文规则写进项目记忆文件，例如 `AGENTS.md`、团队 memory 或 agent memory。之后 provider 会在相关任务中自动使用 `plan-tree`。
 
 ```md
 ## Plan Tree Usage Rule
@@ -85,17 +87,17 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## 安装
 
-把仓库克隆到 Codex skills 目录：
+把仓库克隆到你的 skill 目录：
 
 ```bash
-mkdir -p "$CODEX_HOME/skills"
-git clone https://github.com/SeemSeam/plan-tree.git "$CODEX_HOME/skills/plan-tree"
+mkdir -p "$SKILLS_HOME"
+git clone https://github.com/SeemSeam/plan-tree.git "$SKILLS_HOME/plan-tree"
 ```
 
-如果没有设置 `CODEX_HOME`，使用你的 Codex skills 根目录，例如：
+将 `SKILLS_HOME` 设置为你的 provider 使用的 skill 根目录。也可以直接克隆到明确路径：
 
 ```bash
-git clone https://github.com/SeemSeam/plan-tree.git ~/.codex/skills/plan-tree
+git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```
 
 ## 仓库内容
@@ -105,6 +107,7 @@ SKILL.md
 agents/openai.yaml
 references/maintenance-patterns.md
 references/legacy-migration.md
+assets/plan-tree.jpg
 README.md
 README.zh-CN.md
 ```

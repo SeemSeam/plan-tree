@@ -1,6 +1,6 @@
 ---
 name: plan-tree
-description: Maintain a structured planning document tree made of roadmap/status files, implementation status or handoff TODO files, topic notes, decision records, open questions, ideas/inspiration pools, and repository/file-structure hygiene plans. Use when Codex needs to create, reorganize, audit, or update a multi-file plan, design-doc folder, roadmap tree, active implementation-status file, repo cleanup/filesystem plan, ADR/decision log, ideas inbox, or linked planning knowledge base; reconcile Done/In Progress/Next state; resume work from TODO/handoff state; move resolved questions into decisions; promote ideas into formal plan artifacts; or keep plan documents and file-structure planning internally consistent without making this project-specific.
+description: Maintain a structured planning document tree made of roadmap/status files, implementation status or handoff TODO files, topic notes, decision records, open questions, ideas/inspiration pools, and repository/file-structure hygiene plans. Use when an AI agent needs to create, reorganize, audit, or update a multi-file plan, design-doc folder, roadmap tree, active implementation-status file, repo cleanup/filesystem plan, ADR/decision log, ideas inbox, or linked planning knowledge base; reconcile Done/In Progress/Next state; resume work from TODO/handoff state; move resolved questions into decisions; promote ideas into formal plan artifacts; or keep plan documents and file-structure planning internally consistent without making this project-specific.
 ---
 
 # Plan Tree

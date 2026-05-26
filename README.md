@@ -2,9 +2,11 @@
 
 [中文说明](README.zh-CN.md)
 
+![Plan Tree](assets/plan-tree.jpg)
+
 > Turn short-lived plans into a long-term, stable, structured tree.
 
-`plan-tree` is a Codex skill for keeping project planning durable. It turns temporary provider plans, discussions, decisions, open questions, handoff state, and verification evidence into a Markdown planning tree that can survive many sessions and many agents.
+`plan-tree` is a portable AI planning skill for keeping project planning durable. It turns temporary provider plans, discussions, decisions, open questions, handoff state, and verification evidence into a Markdown planning tree that can survive many sessions and many agents.
 
 ## Core Idea
 
@@ -65,7 +67,7 @@ Mature existing planning trees do not need to be forced into `docs/plantree/`. T
 
 ## Usage
 
-The main usage pattern is to add this English memory rule to `AGENTS.md`, team memory, or Codex memory. Providers can then invoke `plan-tree` automatically whenever planning, clarification, progress tracking, or plan-to-execution coordination is involved.
+The main usage pattern is to add this English memory rule to `AGENTS.md`, team memory, or agent memory. Providers can then invoke `plan-tree` automatically whenever planning, clarification, progress tracking, or plan-to-execution coordination is involved.
 
 ```md
 ## Plan Tree Usage Rule
@@ -85,17 +87,17 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## Installation
 
-Clone this repository into your Codex skills directory:
+Clone this repository into your skill directory:
 
 ```bash
-mkdir -p "$CODEX_HOME/skills"
-git clone https://github.com/SeemSeam/plan-tree.git "$CODEX_HOME/skills/plan-tree"
+mkdir -p "$SKILLS_HOME"
+git clone https://github.com/SeemSeam/plan-tree.git "$SKILLS_HOME/plan-tree"
 ```
 
-If `CODEX_HOME` is not set, use your Codex skills root, for example:
+Set `SKILLS_HOME` to the skill root used by your provider. Or clone directly to an explicit path:
 
 ```bash
-git clone https://github.com/SeemSeam/plan-tree.git ~/.codex/skills/plan-tree
+git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```
 
 ## Repository Contents
@@ -105,6 +107,7 @@ SKILL.md
 agents/openai.yaml
 references/maintenance-patterns.md
 references/legacy-migration.md
+assets/plan-tree.jpg
 README.md
 README.zh-CN.md
 ```
