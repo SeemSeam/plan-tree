@@ -14,7 +14,11 @@
 
 过去，方案落地本身承载了巨大的工作量和时间成本，所以“小规划 + 小推进”是合理常态。人类开发者在实现过程中有足够长的反馈周期来慢慢修正方向。
 
+可以概括为：过去很多项目接近 `10% 规划 + 90% 实施`。规划提供方向，真正的复杂度、时间和风险大多沉在人工实现里。
+
 AI 时代不是这样。AI 的落地速度远远超过人类，但它天然偏短期记忆。继续沿用“小规划 + 小推进”，就会出现一个反直觉问题：代码和文件变化很快，但全局方案、业务边界、决策理由和验收标准没有同步变得更清晰。使用者如果还按过去的逻辑边落盘边规划，项目很容易发生漂移、腐烂和局部补丁化。
+
+在 AI 主导实现的工作流里，比例会反过来：更接近 `90% 规划 + 10% 实施`。这里的比例不是精确工时统计，而是工作重心变化。实施本身被 AI 大幅压缩后，真正决定质量的是前置方案是否充分、边界是否稳定、验收是否明确、执行是否有统一状态源。这必然要求工作流从“边想边做”转向“先澄清方案图谱，再批量落地”。
 
 `plan-tree` 推荐并遵从“大循环”模式：充分讨论、澄清和冻结可落地方案，然后再进入正式实现。很多复杂项目里，方案规划和讨论会承担 90% 以上的人与 AI 迭代时间；真正落地应该是基于已经清晰的方案图谱推进，而不是一边写一边临时补方向。
 
@@ -197,7 +201,11 @@ The deeper reason is that the work model has changed.
 
 In the past, implementation itself carried most of the labor and time cost. Small planning plus small execution was a reasonable default because humans had long feedback loops while coding.
 
+In short, many projects used to look like `10% planning + 90% implementation`. Planning set direction, while most complexity, time, and risk lived in manual implementation.
+
 AI changes that balance. AI can land changes much faster than humans, but it also tends toward short-term memory. If a project keeps using small planning plus small execution, the files can change quickly while the global solution, business boundaries, decision rationale, and acceptance criteria remain underdeveloped. Planning while landing production changes is a poor fit for vibe-coding-era work.
+
+In an AI-led implementation workflow, the ratio often flips closer to `90% planning + 10% implementation`. The numbers are not exact time accounting; they describe a shift in where quality is won or lost. Once implementation is compressed by AI, the deciding factors become upfront solution clarity, stable boundaries, explicit acceptance criteria, and a shared source of execution state. That forces the workflow to move from "think while coding" toward "clarify the solution map first, then execute in larger batches."
 
 `plan-tree` recommends a larger loop: discuss, clarify, and freeze an implementation-ready solution before formal execution. In complex projects, planning and discussion may take more than 90% of the human-and-AI iteration time. Implementation should then follow a clear solution map instead of inventing direction while writing files.
 
