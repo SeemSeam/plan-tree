@@ -14,6 +14,24 @@ AI makes this failure mode sharper. Many older projects looked like `10% plannin
 
 That means the workflow must change. Do not keep doing small planning, small execution, and planning while mutating production files. `plan-tree` favors a larger loop: discuss and clarify first, shape an implementation-ready solution map, then let AI execute in larger batches. After execution, write progress, evidence, and remaining questions back into the planning tree.
 
+## Why It Matters
+
+Structured plans are easier to maintain than structured code because they organize expression and collaboration. Structured code must also carry executable behavior, compatibility, performance, dependencies, failures, and change. Plan nodes such as roadmap, status, decisions, open questions, risks, and history are stable semantic slots: new information can usually be classified without changing the tree. Code modules, classes, functions, and interfaces are executable boundaries; real requirements such as partial validation, user configuration, recovery, multi-tenancy, retries, old data, third-party failures, and performance pressure can pierce those boundaries.
+
+In that sense, `plan-tree` acts as an intent space or control plane for code evolution. The codebase is the implementation space; the planning tree is the space of intent, constraints, evaluation, and projection. A plan item such as "parser and storage must stay decoupled" is not code, but it is a useful observation and constraint over code. Most implementation changes can project back into plan state as `Done`, `Blocked`, `Risk reduced`, `Decision changed`, or `Question opened`. Changes that never project back into the plan become invisible drift.
+
+This is why plan drift is easier to see: `Next` contains completed work, `Open Questions` contains settled issues, roadmap and status disagree, or two files describe the same decision. Code drift is more hidden: the program may still run and tests may still pass while module ownership widens, abstractions stop matching reality, shared utilities become junk drawers, and layers learn too much about each other.
+
+Design and maintenance principles:
+
+- Keep node types stable and semantic: roadmap, status, decisions, open questions, topics, history, and ideas.
+- Separate intent, decision, current state, unresolved uncertainty, execution evidence, and historical detail.
+- Treat implementation discoveries as plan updates before they become silent architecture changes.
+- Link related files instead of duplicating the same rule in many places.
+- Archive old evidence so active roadmap and handoff files stay short.
+- Mark work done only when the artifact, decision, or verification exists.
+- Use open questions only for unresolved questions, not as a task list.
+
 ## What It Stores
 
 A mature planning tree keeps durable state such as:

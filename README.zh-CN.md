@@ -14,6 +14,24 @@ AI 让这个问题更明显。过去很多项目接近 `10% 规划 + 90% 实施`
 
 因此工作流也必须改变：不要继续“小规划 + 小推进 + 边落盘边想”。`plan-tree` 推荐大循环模式：先充分讨论、澄清、形成可落地方案图谱，再让 AI 批量执行；执行完成后，再把进度、证据和剩余问题回写到规划树。
 
+## Plan Tree 的意义
+
+结构化 plans 比结构化代码更好维护，是因为 plan 的结构主要约束表达和协作；代码结构还必须承载可执行行为、历史兼容、性能、依赖、失败和变化。Roadmap、Status、Decision、Open Questions、Risks、History 这些 plan 节点是稳定的语义槽位，新信息通常可以归类进去，不必改变树的结构。代码里的模块、类、函数、接口则是可执行边界；部分校验、用户配置、失败恢复、多租户、后台重试、老数据、第三方失败和性能压力都会穿透原来的边界。
+
+从这个角度看，`plan-tree` 是代码演化的意图空间和控制平面。代码库是实现空间；规划树是意图、约束、评价和投影空间。比如“parser 与 storage 必须解耦”不是代码，但它是作用在代码状态上的观察和约束。大部分实现变化都应该能投影回 plan：`Done`、`Blocked`、`Risk reduced`、`Decision changed` 或 `Question opened`。长期没有投影回 plan 的变化，就会变成不可见的漂移。
+
+Plan 的漂移更容易看见：`Next` 里全是已完成事项，`Open Questions` 里有已决问题，roadmap 和 status 对不上，两个文件重复表达同一个决策。代码漂移更隐蔽：程序还能跑、测试还能过，但模块职责变宽，抽象不再贴合现实，公共工具变成杂物间，层与层之间互相知道太多。
+
+设计和维护原则：
+
+- 保持节点类型稳定且语义化：roadmap、status、decisions、open questions、topics、history、ideas。
+- 分离意图、决策、当前状态、未解决问题、执行证据和历史细节。
+- 实现中发现新事实时，先更新 plan，避免它沉淀成无记录的架构变化。
+- 用链接关联文件，不要在多个地方重复同一条规则。
+- 把旧证据归档，让活跃 roadmap 和 handoff 保持短小。
+- 只有当 artifact、decision 或 verification 存在时，才把事项标为 done。
+- Open questions 只放未解决问题，不要当任务列表使用。
+
 ## Plan Tree 保存什么
 
 一棵成熟的 planning tree 通常保存这些长期状态：
