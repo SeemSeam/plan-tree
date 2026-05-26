@@ -1,32 +1,32 @@
 # Plan Tree
 
-[中文说明](README.zh-CN.md)
+[English](README.md)
 
-> Turn short-lived plans into a long-term, stable, structured tree.
+> 把短期 plans 变成一棵长期稳定、结构化的树。
 
-`plan-tree` is a Codex skill for keeping project planning durable. It turns temporary provider plans, discussions, decisions, open questions, handoff state, and verification evidence into a Markdown planning tree that can survive many sessions and many agents.
+`plan-tree` 是一个用于长期保存项目规划状态的 Codex skill。它把临时 provider plans、讨论、决策、开放问题、交接状态和验证证据沉淀成一棵 Markdown 规划树，让项目跨会话、跨 agent 推进时不漂移。
 
-## Core Idea
+## 核心思想
 
-Provider-native `plan` features are usually short-term, session-local task plans. They can answer "what should happen next", but they rarely preserve why a direction was chosen, what was rejected, which questions remain open, where progress stands, or where the next session should resume.
+Provider 自带的 `plan` 通常是短期的、会话内的、任务级的。它能安排“下一步做什么”，但很难长期保存“为什么这么做、哪些方案被排除、哪些问题未决、当前进度到哪里、下一次应该从哪里继续”。结果是：计划用后即丢，项目越推进越容易漂移。
 
-AI makes this failure mode sharper. Many older projects looked like `10% planning + 90% implementation`: implementation was slow enough that humans could keep correcting direction while coding. In AI-assisted work, implementation is compressed, and complex projects often move closer to `90% planning + 10% implementation`. The numbers are not exact accounting; they describe where quality is now won or lost.
+AI 让这个问题更明显。过去很多项目接近 `10% 规划 + 90% 实施`：实现本身很慢，开发者有足够长的反馈周期边做边修正方向。AI 时代实现速度被大幅压缩，复杂项目更接近 `90% 规划 + 10% 实施`。这个比例不是精确工时，而是工作重心变化：质量越来越取决于前置方案是否充分、边界是否稳定、验收是否清楚、状态源是否统一。
 
-That means the workflow must change. Do not keep doing small planning, small execution, and planning while mutating production files. `plan-tree` favors a larger loop: discuss and clarify first, shape an implementation-ready solution map, then let AI execute in larger batches. After execution, write progress, evidence, and remaining questions back into the planning tree.
+因此工作流也必须改变：不要继续“小规划 + 小推进 + 边落盘边想”。`plan-tree` 推荐大循环模式：先充分讨论、澄清、形成可落地方案图谱，再让 AI 批量执行；执行完成后，再把进度、证据和剩余问题回写到规划树。
 
-## What It Stores
+## Plan Tree 保存什么
 
-A mature planning tree keeps durable state such as:
+一棵成熟的 planning tree 通常保存这些长期状态：
 
-- Entry point and reading path.
-- Roadmap and current progress.
-- Stable decisions.
-- Open questions.
-- Topic notes for solution maps, boundaries, risks, and acceptance criteria.
-- Implementation status and handoff notes.
-- Historical verification and checkpoint evidence.
+- 规划入口和阅读路径：从哪里读、哪个文件说了算。
+- Roadmap 和当前进度：什么完成了、什么正在做、下一步是什么。
+- Decisions：稳定决策、上下文和后果。
+- Open questions：仍未解决的问题，而不是隐藏任务。
+- Topics：方案图谱，包括业务流程、架构边界、验收标准、风险和执行门禁。
+- Implementation status：当前交接、活跃 TODO、blockers、最近验证。
+- History：旧验证、检查点和过期证据，避免污染活跃状态。
 
-Default shape:
+默认结构可以是：
 
 ```text
 docs/plantree/
@@ -43,11 +43,11 @@ docs/plantree/
   ideas/inbox.md
 ```
 
-Mature existing planning trees do not need to be forced into `docs/plantree/`. They can be registered, bridged, and migrated gradually.
+已有成熟规划树不必强行迁移到 `docs/plantree/`。可以先注册、桥接，再逐步整理。
 
-## Usage
+## 使用方式
 
-The main usage pattern is to add this English memory rule to `AGENTS.md`, team memory, or Codex memory. Providers can then invoke `plan-tree` automatically whenever planning, clarification, progress tracking, or plan-to-execution coordination is involved.
+最重要的使用方式不是记命令，而是把下面英文规则写进项目记忆文件，例如 `AGENTS.md`、团队 memory 或 Codex memory。之后 provider 会在相关任务中自动使用 `plan-tree`。
 
 ```md
 ## Plan Tree Usage Rule
@@ -65,22 +65,22 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 `plan-tree` governs planning documents and execution readiness. It does not by itself authorize commits, pushes, releases, destructive file operations, or broad unrelated refactors unless the user explicitly asks for them.
 ```
 
-## Installation
+## 安装
 
-Clone this repository into your Codex skills directory:
+把仓库克隆到 Codex skills 目录：
 
 ```bash
 mkdir -p "$CODEX_HOME/skills"
 git clone https://github.com/SeemSeam/plan-tree.git "$CODEX_HOME/skills/plan-tree"
 ```
 
-If `CODEX_HOME` is not set, use your Codex skills root, for example:
+如果没有设置 `CODEX_HOME`，使用你的 Codex skills 根目录，例如：
 
 ```bash
 git clone https://github.com/SeemSeam/plan-tree.git ~/.codex/skills/plan-tree
 ```
 
-## Repository Contents
+## 仓库内容
 
 ```text
 SKILL.md
