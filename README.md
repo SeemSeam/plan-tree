@@ -65,6 +65,16 @@ docs/plantree/
 
 Mature existing planning trees do not need to be forced into `docs/plantree/`. They can be registered, bridged, and migrated gradually.
 
+## Versioning
+
+`plan-tree` uses Semantic Versioning for public releases:
+
+- `MAJOR`: incompatible changes to the skill contract or default tree model.
+- `MINOR`: new work modes, document roles, templates, or provider metadata that remain compatible.
+- `PATCH`: wording fixes, small documentation updates, and compatibility-safe refinements.
+
+The current version is stored in `VERSION`. Release tags use the `vX.Y.Z` format, for example `v0.1.0`.
+
 ## Usage
 
 The main usage pattern is to add this English memory rule to `AGENTS.md`, team memory, or agent memory. Providers can then invoke `plan-tree` automatically whenever planning, clarification, progress tracking, or plan-to-execution coordination is involved.
@@ -103,6 +113,7 @@ git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ## Repository Contents
 
 ```text
+VERSION
 SKILL.md
 agents/openai.yaml
 references/maintenance-patterns.md

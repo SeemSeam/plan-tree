@@ -65,6 +65,16 @@ docs/plantree/
 
 已有成熟规划树不必强行迁移到 `docs/plantree/`。可以先注册、桥接，再逐步整理。
 
+## 版本管理
+
+`plan-tree` 使用语义化版本管理公开发布：
+
+- `MAJOR`：skill 契约或默认树模型出现不兼容变化。
+- `MINOR`：新增 work modes、文档角色、模板或 provider metadata，且保持兼容。
+- `PATCH`：措辞修正、小型文档更新和兼容性安全的细节优化。
+
+当前版本写在 `VERSION` 文件中。发布 tag 使用 `vX.Y.Z` 格式，例如 `v0.1.0`。
+
 ## 使用方式
 
 最重要的使用方式不是记命令，而是把下面英文规则写进项目记忆文件，例如 `AGENTS.md`、团队 memory 或 agent memory。之后 provider 会在相关任务中自动使用 `plan-tree`。
@@ -103,6 +113,7 @@ git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ## 仓库内容
 
 ```text
+VERSION
 SKILL.md
 agents/openai.yaml
 references/maintenance-patterns.md
