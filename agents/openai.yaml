@@ -1,4 +1,4 @@
 interface:
   display_name: "Plan Tree"
-  short_description: "Maintain docs/plantree plans and baselines"
-  default_prompt: "Use $plan-tree to initialize, maintain, or migrate docs/plantree with a baseline, registered plan roots, roadmap, implementation status, topics, decisions, ideas, and open questions."
+  short_description: "Plan, clarify, and track project execution with a structured planning tree"
+  default_prompt: "Use $plan-tree to discuss project direction, clarify intent and scope before implementation, assess execution readiness, and maintain docs/plantree with a baseline, registered plan roots, roadmap, implementation status, topics, decisions, ideas, open questions, and landed evidence."
