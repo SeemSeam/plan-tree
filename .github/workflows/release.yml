@@ -5,18 +5,19 @@ on:
     tags:
       - "v*.*.*"
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   pypi:
     name: Publish to PyPI
     runs-on: ubuntu-latest
     environment: pypi
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -31,16 +32,14 @@ jobs:
   npm:
     name: Publish to npm
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
 
       - name: Publish npm package
         run: npm publish --access public
