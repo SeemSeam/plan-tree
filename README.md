@@ -100,7 +100,7 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 Install the lightweight installer from PyPI or npm, then install the skill for your provider:
 
 ```bash
-python -m pip install plan-tree
+python -m pip install seemseam-plan-tree
 plan-tree install --provider claude
 ```
 

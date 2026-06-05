@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Build Python distributions
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Publish Python distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check npm token
+        id: npm-token
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "$NODE_AUTH_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish npm package
+        if: steps.npm-token.outputs.available == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Skip npm publish
+        if: steps.npm-token.outputs.available != 'true'
+        run: echo "NPM_TOKEN is not configured; skipping npm publish."

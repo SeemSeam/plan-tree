@@ -100,7 +100,7 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 先从 PyPI 或 npm 安装轻量 installer，再用 installer 安装 skill：
 
 ```bash
-python -m pip install plan-tree
+python -m pip install seemseam-plan-tree
 plan-tree install --provider claude
 ```
 

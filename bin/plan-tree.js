@@ -5,7 +5,7 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const PACKAGE_VERSION = "0.2.0";
+const PACKAGE_VERSION = "0.2.1";
 const REPO_URL = "https://github.com/SeemSeam/plan-tree.git";
 const SKILL_NAME = "plan-tree";
 
