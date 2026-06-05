@@ -5,8 +5,9 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const PACKAGE_VERSION = "0.2.1";
+const PACKAGE_VERSION = "0.2.2";
 const REPO_URL = "https://github.com/SeemSeam/plan-tree.git";
+const README_URL = "https://github.com/SeemSeam/plan-tree#readme";
 const SKILL_NAME = "plan-tree";
 
 const CORE_FILES = ["SKILL.md", "VERSION", "README.md", "README.zh-CN.md"];
@@ -32,23 +33,30 @@ function main(argv) {
 }
 
 function usage() {
-  console.log("Use `plan-tree install --provider claude|opencode|codex`.");
+  console.log("Use `plan-tree install claude|opencode|codex|all`.");
+  console.log(`README: ${README_URL}`);
 }
 
 function parseInstallArgs(args) {
   const options = {
-    provider: "claude",
+    provider: null,
     target: null,
     source: null,
     version: PACKAGE_VERSION,
     force: false,
     dryRun: false
   };
+  let providerArg = null;
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
-    if (arg === "--provider") options.provider = requireValue(args, ++i, arg);
-    else if (arg === "--target") options.target = requireValue(args, ++i, arg);
+    if (arg === "--provider") {
+      const providerValue = requireValue(args, ++i, arg);
+      if (providerArg && providerArg !== providerValue) {
+        throw new Error("provider specified twice with different values");
+      }
+      providerArg = providerValue;
+    } else if (arg === "--target") options.target = requireValue(args, ++i, arg);
     else if (arg === "--source") options.source = requireValue(args, ++i, arg);
     else if (arg === "--version") options.version = requireValue(args, ++i, arg);
     else if (arg === "--force") options.force = true;
@@ -56,17 +64,23 @@ function parseInstallArgs(args) {
     else if (arg === "--help" || arg === "-h") {
       usage();
       process.exit(0);
-    } else {
+    } else if (arg.startsWith("-")) {
       throw new Error(`Unknown argument: ${arg}`);
+    } else if (providerArg) {
+      throw new Error(`Unexpected argument: ${arg}`);
+    } else {
+      providerArg = arg;
     }
   }
 
+  options.provider = providerArg || "claude";
+
   const allowed = [...Object.keys(PROVIDER_TARGETS), "all"];
   if (!allowed.includes(options.provider)) {
-    throw new Error(`--provider must be one of: ${allowed.join(", ")}`);
+    throw new Error(`provider must be one of: ${allowed.join(", ")}`);
   }
   if (options.target && options.provider === "all") {
-    throw new Error("--target cannot be combined with --provider all");
+    throw new Error("--target cannot be combined with provider all");
   }
   return options;
 }
@@ -87,6 +101,9 @@ function install(options) {
   for (const provider of providers) {
     const target = path.resolve(expandHome(options.target || PROVIDER_TARGETS[provider]()));
     installToProvider(source, target, provider, options.force, options.dryRun);
+  }
+  if (!options.dryRun) {
+    console.log(`Read the README: ${README_URL}`);
   }
   return 0;
 }

@@ -9,8 +9,9 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-PACKAGE_VERSION = "0.2.1"
+PACKAGE_VERSION = "0.2.2"
 REPO_ZIP_URL = "https://github.com/SeemSeam/plan-tree/archive/refs/tags/v{version}.zip"
+README_URL = "https://github.com/SeemSeam/plan-tree#readme"
 SKILL_NAME = "plan-tree"
 
 CORE_FILES = [
@@ -30,26 +31,35 @@ PROVIDER_DIRS = {
     "opencode": lambda: Path.home() / ".config" / "opencode" / "skill" / SKILL_NAME,
     "codex": lambda: Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "skills" / SKILL_NAME,
 }
+SUPPORTED_PROVIDERS = [*PROVIDER_DIRS.keys(), "all"]
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="plan-tree",
         description="Install the plan-tree AI planning skill for Claude, opencode, or Codex.",
+        epilog=f"README: {README_URL}",
     )
     subparsers = parser.add_subparsers(dest="command")
 
     install = subparsers.add_parser("install", help="Install the plan-tree skill")
     install.add_argument(
-        "--provider",
-        choices=[*PROVIDER_DIRS.keys(), "all"],
-        default="claude",
+        "provider_arg",
+        nargs="?",
+        choices=SUPPORTED_PROVIDERS,
+        metavar="provider",
         help="Provider install target. Default: claude.",
+    )
+    install.add_argument(
+        "--provider",
+        dest="provider_opt",
+        choices=SUPPORTED_PROVIDERS,
+        help="Backward-compatible provider target option.",
     )
     install.add_argument(
         "--target",
         type=Path,
-        help="Explicit install directory. Cannot be used with --provider all.",
+        help="Explicit install directory. Cannot be used with provider all.",
     )
     install.add_argument(
         "--source",
@@ -74,14 +84,28 @@ def main(argv: list[str] | None = None) -> int:
         print(PACKAGE_VERSION)
         return 0
     if args.command == "install":
+        try:
+            args.provider = normalize_provider(args)
+        except RuntimeError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
         return install(args)
-    print("Use `plan-tree install --provider claude|opencode|codex`.")
+    print("Use `plan-tree install claude|opencode|codex|all`.")
+    print(f"README: {README_URL}")
     return 2
+
+
+def normalize_provider(args: argparse.Namespace) -> str:
+    provider_arg = args.provider_arg
+    provider_opt = args.provider_opt
+    if provider_arg and provider_opt and provider_arg != provider_opt:
+        raise RuntimeError("provider specified twice with different values")
+    return provider_arg or provider_opt or "claude"
 
 
 def install(args: argparse.Namespace) -> int:
     if args.target and args.provider == "all":
-        print("--target cannot be combined with --provider all", file=sys.stderr)
+        print("--target cannot be combined with provider all", file=sys.stderr)
         return 2
 
     providers = list(PROVIDER_DIRS) if args.provider == "all" else [args.provider]
@@ -97,6 +121,8 @@ def install(args: argparse.Namespace) -> int:
         validate_source(source)
         for provider, target in targets:
             install_to_provider(source, target.expanduser(), provider, args.force, args.dry_run)
+        if not args.dry_run:
+            print(f"Read the README: {README_URL}")
     finally:
         if temp_dir is not None:
             temp_dir.cleanup()

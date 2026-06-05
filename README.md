@@ -97,25 +97,39 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## Installation
 
-Install the lightweight installer from PyPI or npm, then install the skill for your provider:
-
-```bash
-python -m pip install seemseam-plan-tree
-plan-tree install --provider claude
-```
+Install the lightweight installer from npm, then install the skill for your provider:
 
 ```bash
 npm install -g plan-tree
-plan-tree install --provider opencode
+plan-tree install codex
 ```
 
-Supported providers:
+Common usage:
 
 ```bash
-plan-tree install --provider claude
-plan-tree install --provider opencode
-plan-tree install --provider codex
-plan-tree install --provider all
+plan-tree version
+plan-tree install claude
+plan-tree install opencode
+plan-tree install codex
+plan-tree install all
+```
+
+You can also install the same `plan-tree` command from PyPI:
+
+```bash
+python -m pip install seemseam-plan-tree
+plan-tree install claude
+```
+
+The npm package exposes a `plan-tree` binary through its `bin` field. Install it globally when you want to run `plan-tree` directly from any shell. A local install with `npm install plan-tree` exposes the command only inside npm's local binary path, so run it with `npx plan-tree ...`, `npm exec plan-tree -- ...`, or `./node_modules/.bin/plan-tree ...`.
+
+Supported install targets:
+
+```bash
+plan-tree install claude
+plan-tree install opencode
+plan-tree install codex
+plan-tree install all
 ```
 
 The installer copies only the skill payload: `SKILL.md`, `VERSION`, README files, `references/`, `assets/`, and Codex/OpenAI metadata when installing for Codex. It does not install `.ccb/`, git state, logs, generated artifacts, or project runtime files.
@@ -123,7 +137,7 @@ The installer copies only the skill payload: `SKILL.md`, `VERSION`, README files
 For local development or offline installation, point the installer at this repository:
 
 ```bash
-plan-tree install --provider claude --source /path/to/plan-tree
+plan-tree install claude --source /path/to/plan-tree
 ```
 
 You can also clone this repository directly into your skill directory:

@@ -97,25 +97,39 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## 安装
 
-先从 PyPI 或 npm 安装轻量 installer，再用 installer 安装 skill：
-
-```bash
-python -m pip install seemseam-plan-tree
-plan-tree install --provider claude
-```
+先从 npm 安装轻量 installer，再用 installer 安装 skill：
 
 ```bash
 npm install -g plan-tree
-plan-tree install --provider opencode
+plan-tree install codex
 ```
 
-支持的 provider：
+常用命令：
 
 ```bash
-plan-tree install --provider claude
-plan-tree install --provider opencode
-plan-tree install --provider codex
-plan-tree install --provider all
+plan-tree version
+plan-tree install claude
+plan-tree install opencode
+plan-tree install codex
+plan-tree install all
+```
+
+也可以从 PyPI 安装同一个 `plan-tree` 命令：
+
+```bash
+python -m pip install seemseam-plan-tree
+plan-tree install claude
+```
+
+npm 包通过 `bin` 字段暴露 `plan-tree` 命令。想在任意 shell 里直接运行 `plan-tree`，需要全局安装。普通的 `npm install plan-tree` 只会把命令放到 npm 的本地 binary 路径里，需要用 `npx plan-tree ...`、`npm exec plan-tree -- ...` 或 `./node_modules/.bin/plan-tree ...` 调用。
+
+支持的安装目标：
+
+```bash
+plan-tree install claude
+plan-tree install opencode
+plan-tree install codex
+plan-tree install all
 ```
 
 installer 只复制 skill payload：`SKILL.md`、`VERSION`、README 文件、`references/`、`assets/`，以及安装到 Codex 时需要的 Codex/OpenAI metadata。它不会安装 `.ccb/`、git 状态、日志、生成物或项目运行态文件。
@@ -123,7 +137,7 @@ installer 只复制 skill payload：`SKILL.md`、`VERSION`、README 文件、`re
 本地开发或离线安装时，可以显式指定当前仓库：
 
 ```bash
-plan-tree install --provider claude --source /path/to/plan-tree
+plan-tree install claude --source /path/to/plan-tree
 ```
 
 也可以直接把仓库克隆到你的 skill 目录：
