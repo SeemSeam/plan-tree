@@ -97,7 +97,36 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## Installation
 
-Clone this repository into your skill directory:
+Install the lightweight installer from PyPI or npm, then install the skill for your provider:
+
+```bash
+python -m pip install plan-tree
+plan-tree install --provider claude
+```
+
+```bash
+npm install -g plan-tree
+plan-tree install --provider opencode
+```
+
+Supported providers:
+
+```bash
+plan-tree install --provider claude
+plan-tree install --provider opencode
+plan-tree install --provider codex
+plan-tree install --provider all
+```
+
+The installer copies only the skill payload: `SKILL.md`, `VERSION`, README files, `references/`, `assets/`, and Codex/OpenAI metadata when installing for Codex. It does not install `.ccb/`, git state, logs, generated artifacts, or project runtime files.
+
+For local development or offline installation, point the installer at this repository:
+
+```bash
+plan-tree install --provider claude --source /path/to/plan-tree
+```
+
+You can also clone this repository directly into your skill directory:
 
 ```bash
 mkdir -p "$SKILLS_HOME"
@@ -115,6 +144,9 @@ git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```text
 VERSION
 SKILL.md
+pyproject.toml
+package.json
+bin/plan-tree.js
 agents/openai.yaml
 references/maintenance-patterns.md
 references/legacy-migration.md

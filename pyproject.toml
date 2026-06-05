@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plan-tree"
+version = "0.2.0"
+description = "Installer for the portable plan-tree AI planning skill."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "SeemSeam" }
+]
+keywords = ["ai", "agents", "skills", "planning", "plan-tree"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Documentation",
+  "Topic :: Utilities"
+]
+
+[project.urls]
+Homepage = "https://github.com/SeemSeam/plan-tree"
+Repository = "https://github.com/SeemSeam/plan-tree"
+
+[project.scripts]
+plan-tree = "plan_tree_installer.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/plan_tree_installer"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/plan_tree_installer",
+  "pyproject.toml",
+  "README.md",
+  "README.zh-CN.md",
+  "VERSION"
+]

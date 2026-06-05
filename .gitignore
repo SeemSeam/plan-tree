@@ -1,3 +1,8 @@
 .ccb/
 .DS_Store
 *.swp
+dist/
+build/
+*.egg-info/
+node_modules/
+*.tgz

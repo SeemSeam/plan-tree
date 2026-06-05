@@ -97,7 +97,36 @@ A plan is implementation-ready only when the scope, chosen approach, expected be
 
 ## 安装
 
-把仓库克隆到你的 skill 目录：
+先从 PyPI 或 npm 安装轻量 installer，再用 installer 安装 skill：
+
+```bash
+python -m pip install plan-tree
+plan-tree install --provider claude
+```
+
+```bash
+npm install -g plan-tree
+plan-tree install --provider opencode
+```
+
+支持的 provider：
+
+```bash
+plan-tree install --provider claude
+plan-tree install --provider opencode
+plan-tree install --provider codex
+plan-tree install --provider all
+```
+
+installer 只复制 skill payload：`SKILL.md`、`VERSION`、README 文件、`references/`、`assets/`，以及安装到 Codex 时需要的 Codex/OpenAI metadata。它不会安装 `.ccb/`、git 状态、日志、生成物或项目运行态文件。
+
+本地开发或离线安装时，可以显式指定当前仓库：
+
+```bash
+plan-tree install --provider claude --source /path/to/plan-tree
+```
+
+也可以直接把仓库克隆到你的 skill 目录：
 
 ```bash
 mkdir -p "$SKILLS_HOME"
@@ -115,6 +144,9 @@ git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```text
 VERSION
 SKILL.md
+pyproject.toml
+package.json
+bin/plan-tree.js
 agents/openai.yaml
 references/maintenance-patterns.md
 references/legacy-migration.md

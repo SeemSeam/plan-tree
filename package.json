@@ -1,0 +1,30 @@
+{
+  "name": "plan-tree",
+  "version": "0.2.0",
+  "description": "Installer for the portable plan-tree AI planning skill.",
+  "homepage": "https://github.com/SeemSeam/plan-tree",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeemSeam/plan-tree.git"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "skills",
+    "planning",
+    "plan-tree"
+  ],
+  "bin": {
+    "plan-tree": "bin/plan-tree.js"
+  },
+  "files": [
+    "bin/plan-tree.js",
+    "README.md",
+    "README.zh-CN.md",
+    "VERSION"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}
