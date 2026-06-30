@@ -9,7 +9,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-PACKAGE_VERSION = "0.2.2"
+PACKAGE_VERSION = "0.3.0"
 REPO_ZIP_URL = "https://github.com/SeemSeam/plan-tree/archive/refs/tags/v{version}.zip"
 README_URL = "https://github.com/SeemSeam/plan-tree#readme"
 SKILL_NAME = "plan-tree"
