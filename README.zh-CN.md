@@ -30,6 +30,7 @@ Plan 的漂移更容易看见：`Next` 里全是已完成事项，`Open Question
 - 分离意图、决策、当前状态、未解决问题、执行证据和历史细节。
 - 实现中发现新事实时，先更新 plan，避免它沉淀成无记录的架构变化。
 - 用链接关联文件，不要在多个地方重复同一条规则。
+- 保持梗概短小，把细节拆到可检索的 capsule、detail shards、evidence 和 history。
 - 把旧证据归档，让活跃 roadmap 和 handoff 保持短小。
 - 只有当 artifact、decision 或 verification 存在时，才把事项标为 done。
 - Open questions 只放未解决问题，不要当任务列表使用。
@@ -42,9 +43,9 @@ Plan 的漂移更容易看见：`Next` 里全是已完成事项，`Open Question
 - Roadmap 和当前进度：什么完成了、什么正在做、下一步是什么。
 - Decisions：稳定决策、上下文和后果。
 - Open questions：仍未解决的问题，而不是隐藏任务。
-- Topics：方案图谱，包括业务流程、架构边界、验收标准、风险和执行门禁。
+- Topics：topic capsule 和 detail shards，包括业务流程、架构边界、验收标准、风险和执行门禁。
 - Implementation status：当前交接、活跃 TODO、blockers、最近验证。
-- History：旧验证、检查点和过期证据，避免污染活跃状态。
+- Evidence / History：验证记录、旧验证、检查点和过期证据，避免污染活跃状态。
 
 默认结构可以是：
 
@@ -57,13 +58,22 @@ docs/plantree/
     roadmap.md
     implementation-status.md
     open-questions.md
+    indexes/
     topics/
+      README.md
+      <topic>.md
+      <topic>/
+        contracts.md
+        alternatives.md
+        edge-cases.md
     decisions/
+    evidence/
     history/
   ideas/inbox.md
 ```
 
 已有成熟规划树不必强行迁移到 `docs/plantree/`。可以先注册、桥接，再逐步整理。
+已有巨石文件也可以原地 normalize：先创建或更新 migration map，再保留短梗概，把稳定细节拆到 detail shards，把验证记录移到 evidence，把旧推理保存在 history 或 archive-only source notes。
 
 ## 版本管理
 

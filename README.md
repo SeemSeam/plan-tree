@@ -30,6 +30,7 @@ Design and maintenance principles:
 - Separate intent, decision, current state, unresolved uncertainty, execution evidence, and historical detail.
 - Treat implementation discoveries as plan updates before they become silent architecture changes.
 - Link related files instead of duplicating the same rule in many places.
+- Keep summaries short and split details into retrievable capsules, detail shards, evidence, and history.
 - Archive old evidence so active roadmap and handoff files stay short.
 - Mark work done only when the artifact, decision, or verification exists.
 - Use open questions only for unresolved questions, not as a task list.
@@ -42,9 +43,9 @@ A mature planning tree keeps durable state such as:
 - Roadmap and current progress.
 - Stable decisions.
 - Open questions.
-- Topic notes for solution maps, boundaries, risks, and acceptance criteria.
+- Topic capsules and detail shards for solution maps, boundaries, risks, and acceptance criteria.
 - Implementation status and handoff notes.
-- Historical verification and checkpoint evidence.
+- Evidence records, historical verification, and checkpoint archives.
 
 Default shape:
 
@@ -57,13 +58,22 @@ docs/plantree/
     roadmap.md
     implementation-status.md
     open-questions.md
+    indexes/
     topics/
+      README.md
+      <topic>.md
+      <topic>/
+        contracts.md
+        alternatives.md
+        edge-cases.md
     decisions/
+    evidence/
     history/
   ideas/inbox.md
 ```
 
 Mature existing planning trees do not need to be forced into `docs/plantree/`. They can be registered, bridged, and migrated gradually.
+Oversized existing trees can also be normalized in place. Create or update a migration map first, then keep short active summaries, move durable detail to detail shards, move verification to evidence, and preserve old reasoning in history or archive-only source notes.
 
 ## Versioning
 
