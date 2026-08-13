@@ -7,7 +7,7 @@ Read this reference only when the core `SKILL.md` says the task needs detailed t
 Use this generic shape when no local convention exists:
 
 ```text
-<plan-root>/
+<NNN>-<plan-name>/
   README.md
   roadmap.md
   implementation-status.md
@@ -37,6 +37,16 @@ Use this generic shape when no local convention exists:
 ```
 
 The tree defines document roles, not a mandatory directory template. Create only the pieces the plan actually uses. Keep topic nesting shallow: a topic capsule can have a same-name folder for detail shards, but avoid deep trees unless an established project convention already exists.
+
+For a new numbered Plan with no local convention, use a short entry header:
+
+```md
+Plan ID: P001
+Affected Modules: `authentication`, `storage`
+Related baseline: [Project baseline](../../baseline/README.md)
+```
+
+Affected module keys come from `baseline/module-map.md`. They classify impact and do not create physical parents under `plans/`.
 
 ## Retrieval Layers
 
@@ -88,6 +98,20 @@ Primary retrieval roles:
 - `history`: superseded state, archive-only source material, old logs, and retired snapshots.
 
 If a file has more than one primary role, either split it or state that it is archive-only/source material.
+
+## Lightweight Plan And Task IDs
+
+Use IDs only when they improve retrieval or cross-file references:
+
+- New numbered Plan roots use `001-<stable-slug>/`, `002-<stable-slug>/`, and so on; their readable IDs are `P001`, `P002`, and so on.
+- Allocate `max(retained Plan numbers) + 1`. Keep archived or retired IDs registered, allow gaps, and never renumber to express priority.
+- Keep the Plan registry in the root README while it remains small. A useful shape is `ID | Plan | Affected Modules | Status | Current Phase | Last Landed | Next Target`.
+- Optional roadmap labels use `T001`, `T002`, and so on within one Plan. The roadmap owns their title, state, and relative order.
+- Do not create a task allocation index merely to mirror the roadmap. If old Done items leave the active roadmap, retain their IDs in linked evidence or history.
+- Keep decision filename numbering local to `decisions/`. Use question IDs only when questions need durable references; do not number ideas before promotion.
+- Preserve an established project's naming or issue convention. Numbering is a default for new trees, not a reason to mass-rename mature roots.
+
+Same-change maintenance is enough by default: update the authority and required entrypoint summary, then validate uniqueness, path/metadata agreement, module keys, status consistency, and links. Add automated allocation, locks, journals, or repair only after repeated observed drift justifies them.
 
 ## Topic Capsules And Detail Shards
 
@@ -168,6 +192,7 @@ Rules:
 - `In Progress`: active implementation, review, or concrete next action underway.
 - `Next`: unscheduled but accepted work.
 - `Deferred`: intentionally postponed work.
+- If a task has an ID, keep that ID when moving it between status sections. `roadmap.md` remains its sole active identity and status authority.
 - Keep items short and link to source topic, decision, PR, issue, commit, artifact, or file when available.
 - Move changelog detail, repeated test counts, review ids, and checkpoint narratives to history.
 - Promote long roadmap sub-bullets to a phase/topic file.
@@ -202,6 +227,7 @@ Rules:
 
 - Keep this file operational and short.
 - Link active tasks back to roadmap items, phase details, topics, decisions, or issues.
+- Reuse optional roadmap task IDs in `Active TODO`; do not maintain a second active task ledger in the handoff.
 - Move completed items into `Done This Phase` with evidence such as commit hash, test command, or created artifact.
 - Keep `Blockers` limited to issues that currently stop progress.
 - Keep `Next Commit Target` concrete enough for a new session to resume.
@@ -268,6 +294,7 @@ Do not paste long raw logs unless the exact output is the artifact. Summarize re
 
 - Create only indexes that solve a real navigation problem.
 - Root README: purpose, scope, authority/order, reading paths, and links to indexes.
+- Module index: create a derived `indexes/by-module.md` only when module-based retrieval is demonstrably difficult. Never duplicate Plan files into module folders or make the module view an identity authority.
 - Topic index: group files by role or theme with one-line descriptions.
 - Decision index: group by theme/phase and show active/superseded relationships.
 - Phase map: link each phase to roadmap item, implementation detail, gate/checklist, evidence, and accepted checkpoint.
@@ -353,6 +380,7 @@ Governance and structure:
 
 - Planning entrypoint, registered plan roots, and folder choices follow governance.
 - `docs/plantree/README.md` registers stable roots under `docs/plantree/plans/`.
+- New numbered roots are flat, lexically sortable, and agree with their root registry ID and Plan README metadata.
 - Specific plan roots link to `docs/plantree/baseline/README.md` or relevant baseline files.
 - Durable files are discoverable from the nearest useful index or root README.
 - Active roadmap and implementation-status files did not absorb completed history.
@@ -369,6 +397,8 @@ Content and consistency:
 - Duplicate decisions covering the same choice are resolved or marked.
 - Open questions already answered by decisions are removed or narrowed.
 - Active implementation TODOs do not contradict roadmap, phase gates, or decisions.
+- Optional task IDs are unique within a Plan and have no competing active task registry.
+- Affected module keys exist in `baseline/module-map.md`; module reclassification did not move or duplicate Plan roots.
 - Completed implementation-status items have evidence such as artifact, commit, or verification note.
 - Repository cleanup tasks include inventory, archive/backup rule, owner decision, and rollback note.
 - Newly introduced top-level directories or generated artifacts are documented, ignored, or assigned an owner.

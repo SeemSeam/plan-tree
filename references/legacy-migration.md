@@ -5,9 +5,9 @@ Read this reference only when the user asks to migrate, normalize, adopt, consol
 ## Migration Modes
 
 - Adopt in place: create `docs/plantree/README.md` as the registry and link to the old tree without moving files. Use when the old tree is mature, externally referenced, or governed by repo policy.
-- Bridge: create `docs/plantree/`, build baseline context, register legacy roots, and direct all new work to `docs/plantree/plans/`. Use as the default first migration step.
+- Bridge: create `docs/plantree/`, build baseline context, register legacy roots, and direct new numbered work to `docs/plantree/plans/<NNN>-<plan-name>/` when the project adopts that convention. Use as the default first migration step.
 - Normalize in place: keep the root location, but split oversized or mixed-role files into topic capsules, detail shards, evidence records, indexes, and history archives. Use when the tree already lives under `docs/plantree/` or when moving paths would create unnecessary churn.
-- Move active scope: move one coherent active plan root into `docs/plantree/plans/<plan-name>/`, update links, and leave a moved stub at the old entrypoint. Use only when the mapping is clear.
+- Move active scope: move one coherent active Plan root into `docs/plantree/plans/<NNN>-<plan-name>/`, update links, and leave a moved stub at the old entrypoint. Use only when the mapping and ID allocation are clear.
 - Archive: mark old material as superseded or archive-only, usually in place. Delete only when the user explicitly approves and a rollback/source note exists.
 
 ## Assessment Checklist
@@ -27,7 +27,7 @@ For each candidate, record:
 ## Target Mapping
 
 - Project-wide architecture, module maps, runtime flows, state boundaries, and verification gates go to `docs/plantree/baseline/`.
-- Active workstream plans go to `docs/plantree/plans/<plan-name>/`.
+- Active workstream Plans go to `docs/plantree/plans/<NNN>-<plan-name>/` when the target tree uses lightweight numbering; otherwise preserve its registered local convention.
 - Active roadmap/status material goes to that plan root's `roadmap.md` or `implementation-status.md`.
 - Durable topic summaries go to short topic capsules under `topics/`; long topic detail goes to same-name topic folders or reader-task shards.
 - Stable decisions go to the nearest relevant `decisions/` folder and must be indexed or linked.

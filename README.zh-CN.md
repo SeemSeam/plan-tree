@@ -53,7 +53,7 @@ Plan 的漂移更容易看见：`Next` 里全是已完成事项，`Open Question
 docs/plantree/
   README.md
   baseline/
-  plans/<plan-name>/
+  plans/001-<plan-name>/
     README.md
     roadmap.md
     implementation-status.md
@@ -72,6 +72,10 @@ docs/plantree/
   ideas/inbox.md
 ```
 
+对于没有既有命名约定的新规划树，Plan root 使用项目级轻量编号，例如 `P001`，对应平铺目录 `plans/001-authentication/`。编号是稳定的创建引用，不是优先级位置：允许空号，已经分配的编号不得复用或重排。
+
+Roadmap 中的 `T001` 等任务标签是可选的，并且只在所属 Plan 内有效。使用任务编号时，roadmap 仍是任务身份、状态和顺序的唯一活跃权威，不再建立平行的任务分配账本。受影响的代码或产品模块使用 `Affected Modules: authentication, storage` 这样的 Plan 元数据记录，其中的稳定 key 来自 `baseline/module-map.md`，不增加物理模块目录层。每次修改同时更新权威文件和必要的入口摘要，然后检查编号、模块 key、状态和链接。
+
 已有成熟规划树不必强行迁移到 `docs/plantree/`。可以先注册、桥接，再逐步整理。
 已有巨石文件也可以原地 normalize：先创建或更新 migration map，再保留短梗概，把稳定细节拆到 detail shards，把验证记录移到 evidence，把旧推理保存在 history 或 archive-only source notes。
 
@@ -87,7 +91,7 @@ docs/plantree/
 
 ## 使用方式
 
-最重要的使用方式不是记命令，而是把下面英文规则写进项目记忆文件，例如 `AGENTS.md`、团队 memory 或 agent memory。之后 provider 会在相关任务中自动使用 `plan-tree`。
+installer 现在会默认注入一段精简的 Provider 持久指令，使后续会话能够在规划、需求澄清、进度维护和 plan-to-execution 协调时自动使用 `plan-tree`。如果需要团队共享的项目级规则或更完整的约束，可以继续把下面的英文规则加入项目 `AGENTS.md`、`CLAUDE.md`、团队 memory 或 agent memory。
 
 ```md
 ## Plan Tree Usage Rule
@@ -96,11 +100,15 @@ Any project planning, roadmap discussion, requirement clarification, scope negot
 
 When a request is related to planning or implementation direction, first inspect the relevant plan-tree entrypoint and current plan state when available. If no plan-tree exists and the task needs durable planning state, initialize or propose the minimal `docs/plantree/` structure according to the skill rules.
 
+For new Plan roots without an established project convention, use stable project-wide IDs such as `P001` with flat directories such as `plans/001-authentication/`. Keep optional task IDs in the roadmap as their sole active authority. Treat affected modules as metadata rather than physical Plan-directory parents, and never renumber IDs to express priority or status.
+
 Before the solution is mature enough to implement, stay in planning and clarification mode. Deeply elicit and expand the user's intent into a concrete solution map: goals, non-goals, constraints, options, tradeoffs, risks, dependencies, acceptance criteria, verification path, and rollout or rollback notes. Record durable clarification results, open questions, assumptions, and decisions in plan-tree files when useful.
 
 Do not start formal implementation in the main project surface while the plan still contains unresolved core ambiguity. At most, create a small isolated prototype or sample only when it helps validate the direction, and keep it clearly separate from the production path.
 
 A plan is implementation-ready only when the scope, chosen approach, expected behavior, affected surfaces, acceptance criteria, verification method, and remaining risks are explicit enough that execution should not rely on "figure it out while coding." Once implementation-ready, proceed autonomously with the project changes, then update plan-tree status, decisions, open questions, and handoff notes to reflect the result.
+
+Maintain same-change consistency: update the authoritative Plan Tree file and any required entrypoint summary together, then check IDs, paths, affected module keys, roadmap state, and relative links. Prefer read-only drift detection over watchers, automatic renumbering, or ambiguous repair.
 
 `plan-tree` governs planning documents and execution readiness. It does not by itself authorize commits, pushes, releases, destructive file operations, or broad unrelated refactors unless the user explicitly asks for them.
 ```
@@ -142,7 +150,26 @@ plan-tree install codex
 plan-tree install all
 ```
 
-installer 只复制 skill payload：`SKILL.md`、`VERSION`、README 文件、`references/`、`assets/`，以及安装到 Codex 时需要的 Codex/OpenAI metadata。它不会安装 `.ccb/`、git 状态、日志、生成物或项目运行态文件。
+默认情况下，每次安装还会在 Provider 官方的用户级全局指令文件中创建或更新一个 Plan Tree managed block：
+
+| Provider | 持久指令文件 |
+| --- | --- |
+| Claude Code | `~/.claude/CLAUDE.md` |
+| OpenCode | `~/.config/opencode/AGENTS.md` |
+| Codex | `$CODEX_HOME/AGENTS.md`，默认是 `~/.codex/AGENTS.md` |
+
+installer 只管理 `<!-- plan-tree:instructions:start -->` 与 `<!-- plan-tree:instructions:end -->` 之间的内容。用户原有内容和文件权限会被保留，重复安装只更新该区块。这些文件属于每次会话加载的持久指令，不会替换 Provider 内置 system prompt，也不是安全策略。
+
+使用 `--no-instructions` 可以只安装 skill；使用 `--dry-run` 可以查看 skill 和指令目标而不写入：
+
+```bash
+plan-tree install codex --no-instructions
+plan-tree install all --dry-run
+```
+
+`--force` 会替换已有 skill 目录，但不会替换整个指令文件。如果 marker 缺失、重复或顺序异常，安装器会在替换已有 skill 前停止并要求手工修复。自定义 `--target` 只改变 skill 目录，持久指令仍写入该 Provider 的官方全局路径。
+
+skill payload 包含 `SKILL.md`、`VERSION`、README 文件、`references/`、`prompts/`、`assets/`，以及安装到 Codex 时需要的 Codex/OpenAI metadata。它不会安装 `.ccb/`、git 状态、日志、生成物或项目运行态文件。Provider 路径遵循官方 [Claude Code memory](https://code.claude.com/docs/en/memory)、[OpenCode rules](https://opencode.ai/docs/rules/) 和 [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) 文档。
 
 本地开发或离线安装时，可以显式指定当前仓库：
 
@@ -163,6 +190,8 @@ git clone https://github.com/SeemSeam/plan-tree.git "$SKILLS_HOME/plan-tree"
 git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```
 
+直接 clone 只会安装 skill payload；如果还需要 managed 持久指令，请使用 installer。
+
 ## 仓库内容
 
 ```text
@@ -172,8 +201,14 @@ pyproject.toml
 package.json
 bin/plan-tree.js
 agents/openai.yaml
+prompts/claude.md
+prompts/opencode.md
+prompts/codex.md
 references/maintenance-patterns.md
 references/legacy-migration.md
+docs/releases/v0.4.0.md
+tests/test_plantree_contract.py
+tests/test_installer_instructions.py
 assets/plan-tree.jpg
 README.md
 README.zh-CN.md

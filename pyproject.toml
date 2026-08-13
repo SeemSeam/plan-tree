@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "seemseam-plan-tree"
-version = "0.3.0"
+version = "0.4.0"
 description = "Installer for the portable plan-tree AI planning skill."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -34,9 +34,9 @@ packages = ["src/plan_tree_installer"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "src/plan_tree_installer",
-  "pyproject.toml",
-  "README.md",
-  "README.zh-CN.md",
-  "VERSION"
+  "/src/plan_tree_installer",
+  "/pyproject.toml",
+  "/README.md",
+  "/README.zh-CN.md",
+  "/VERSION"
 ]

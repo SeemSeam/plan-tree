@@ -53,7 +53,7 @@ Default shape:
 docs/plantree/
   README.md
   baseline/
-  plans/<plan-name>/
+  plans/001-<plan-name>/
     README.md
     roadmap.md
     implementation-status.md
@@ -72,6 +72,10 @@ docs/plantree/
   ideas/inbox.md
 ```
 
+For a new tree with no local naming convention, Plan roots use lightweight, project-wide IDs such as `P001` and flat directories such as `plans/001-authentication/`. IDs are stable creation references, not priority positions: gaps are valid and IDs are never reused or renumbered.
+
+Roadmap task labels such as `T001` are optional and Plan-local. When used, the roadmap remains their only active identity, status, and ordering authority; a parallel task allocation registry is unnecessary. Affected code or product modules belong in Plan metadata such as `Affected Modules: authentication, storage`, using keys from `baseline/module-map.md`, not in another physical directory layer. Update canonical state and required entrypoint summaries in the same change, then check IDs, module keys, status, and links.
+
 Mature existing planning trees do not need to be forced into `docs/plantree/`. They can be registered, bridged, and migrated gradually.
 Oversized existing trees can also be normalized in place. Create or update a migration map first, then keep short active summaries, move durable detail to detail shards, move verification to evidence, and preserve old reasoning in history or archive-only source notes.
 
@@ -87,7 +91,7 @@ The current version is stored in `VERSION`. Release tags use the `vX.Y.Z` format
 
 ## Usage
 
-The main usage pattern is to add this English memory rule to `AGENTS.md`, team memory, or agent memory. Providers can then invoke `plan-tree` automatically whenever planning, clarification, progress tracking, or plan-to-execution coordination is involved.
+The installer now adds a concise provider-specific persistent instruction by default, so new sessions can invoke `plan-tree` automatically for planning, clarification, progress tracking, and plan-to-execution coordination. For repository-shared policy or a more explicit project-level contract, add the fuller rule below to the project's `AGENTS.md`, `CLAUDE.md`, team memory, or agent memory.
 
 ```md
 ## Plan Tree Usage Rule
@@ -96,11 +100,15 @@ Any project planning, roadmap discussion, requirement clarification, scope negot
 
 When a request is related to planning or implementation direction, first inspect the relevant plan-tree entrypoint and current plan state when available. If no plan-tree exists and the task needs durable planning state, initialize or propose the minimal `docs/plantree/` structure according to the skill rules.
 
+For new Plan roots without an established project convention, use stable project-wide IDs such as `P001` with flat directories such as `plans/001-authentication/`. Keep optional task IDs in the roadmap as their sole active authority. Treat affected modules as metadata rather than physical Plan-directory parents, and never renumber IDs to express priority or status.
+
 Before the solution is mature enough to implement, stay in planning and clarification mode. Deeply elicit and expand the user's intent into a concrete solution map: goals, non-goals, constraints, options, tradeoffs, risks, dependencies, acceptance criteria, verification path, and rollout or rollback notes. Record durable clarification results, open questions, assumptions, and decisions in plan-tree files when useful.
 
 Do not start formal implementation in the main project surface while the plan still contains unresolved core ambiguity. At most, create a small isolated prototype or sample only when it helps validate the direction, and keep it clearly separate from the production path.
 
 A plan is implementation-ready only when the scope, chosen approach, expected behavior, affected surfaces, acceptance criteria, verification method, and remaining risks are explicit enough that execution should not rely on "figure it out while coding." Once implementation-ready, proceed autonomously with the project changes, then update plan-tree status, decisions, open questions, and handoff notes to reflect the result.
+
+Maintain same-change consistency: update the authoritative Plan Tree file and any required entrypoint summary together, then check IDs, paths, affected module keys, roadmap state, and relative links. Prefer read-only drift detection over watchers, automatic renumbering, or ambiguous repair.
 
 `plan-tree` governs planning documents and execution readiness. It does not by itself authorize commits, pushes, releases, destructive file operations, or broad unrelated refactors unless the user explicitly asks for them.
 ```
@@ -142,7 +150,26 @@ plan-tree install codex
 plan-tree install all
 ```
 
-The installer copies only the skill payload: `SKILL.md`, `VERSION`, README files, `references/`, `assets/`, and Codex/OpenAI metadata when installing for Codex. It does not install `.ccb/`, git state, logs, generated artifacts, or project runtime files.
+By default, each install also creates or updates one managed Plan Tree block in the provider's official user-global instruction file:
+
+| Provider | Persistent instruction file |
+| --- | --- |
+| Claude Code | `~/.claude/CLAUDE.md` |
+| OpenCode | `~/.config/opencode/AGENTS.md` |
+| Codex | `$CODEX_HOME/AGENTS.md`, defaulting to `~/.codex/AGENTS.md` |
+
+The installer owns only the text between `<!-- plan-tree:instructions:start -->` and `<!-- plan-tree:instructions:end -->`. Existing user content and file permissions are preserved, and repeated installs replace only that block. These files are persistent session instructions, not replacements for a provider's built-in system prompt or a security policy.
+
+Use `--no-instructions` to install only the skill, or `--dry-run` to inspect both the skill and instruction targets without writing:
+
+```bash
+plan-tree install codex --no-instructions
+plan-tree install all --dry-run
+```
+
+`--force` replaces an existing skill directory but never replaces the whole instruction file. If managed markers are missing, duplicated, or reversed, installation stops for manual repair before any existing skill is replaced. A custom `--target` changes only the skill directory; persistent instructions retain the provider's official global path.
+
+The skill payload contains `SKILL.md`, `VERSION`, README files, `references/`, `prompts/`, `assets/`, and Codex/OpenAI metadata when installing for Codex. It does not install `.ccb/`, git state, logs, generated artifacts, or project runtime files. Provider path behavior follows the official [Claude Code memory](https://code.claude.com/docs/en/memory), [OpenCode rules](https://opencode.ai/docs/rules/), and [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) documentation.
 
 For local development or offline installation, point the installer at this repository:
 
@@ -163,6 +190,8 @@ Set `SKILLS_HOME` to the skill root used by your provider. Or clone directly to 
 git clone https://github.com/SeemSeam/plan-tree.git /path/to/skills/plan-tree
 ```
 
+Direct cloning installs only the skill payload; use the installer when you also want managed persistent instructions.
+
 ## Repository Contents
 
 ```text
@@ -172,8 +201,14 @@ pyproject.toml
 package.json
 bin/plan-tree.js
 agents/openai.yaml
+prompts/claude.md
+prompts/opencode.md
+prompts/codex.md
 references/maintenance-patterns.md
 references/legacy-migration.md
+docs/releases/v0.4.0.md
+tests/test_plantree_contract.py
+tests/test_installer_instructions.py
 assets/plan-tree.jpg
 README.md
 README.zh-CN.md

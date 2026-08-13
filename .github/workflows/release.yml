@@ -4,18 +4,16 @@ on:
   push:
     tags:
       - "v*.*.*"
-  workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  pypi:
-    name: Publish to PyPI
+  validate:
+    name: Validate release source
     runs-on: ubuntu-latest
-    environment: pypi
-    if: github.event_name == 'push'
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
 
@@ -23,17 +21,42 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Build Python distributions
-        run: |
-          python -m pip install --upgrade build
-          python -m build
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
 
-      - name: Publish Python distributions
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Validate tag and bilingual release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(tr -d '\r\n' < VERSION)"
+          test "$GITHUB_REF_NAME" = "v$version"
+          notes_file="docs/releases/$GITHUB_REF_NAME.md"
+          test -s "$notes_file"
+          grep -Fxq '## English' "$notes_file"
+          grep -Fxq '## 中文' "$notes_file"
+
+      - name: Run repository tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m unittest discover -s tests -v
+
+      - name: Check installer syntax and versions
+        run: |
+          node --check bin/plan-tree.js
+          python -m plan_tree_installer.cli version
+          node bin/plan-tree.js version
+        env:
+          PYTHONPATH: src
 
   npm:
     name: Publish to npm
+    needs: validate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v6
 
@@ -43,7 +66,55 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
+      - name: Ensure OIDC-capable npm
+        run: npm install --global npm@11.15.0
+
+      - name: Inspect npm package
+        run: npm pack --dry-run
+
       - name: Publish npm package
         run: npm publish --access public
+
+  pypi:
+    name: Publish to PyPI
+    needs: npm
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Build and check Python distributions
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Publish Python distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create bilingual GitHub Release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --fail-on-no-commits \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "docs/releases/$GITHUB_REF_NAME.md"

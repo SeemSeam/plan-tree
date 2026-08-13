@@ -9,7 +9,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-PACKAGE_VERSION = "0.3.0"
+PACKAGE_VERSION = "0.4.0"
 REPO_ZIP_URL = "https://github.com/SeemSeam/plan-tree/archive/refs/tags/v{version}.zip"
 README_URL = "https://github.com/SeemSeam/plan-tree#readme"
 SKILL_NAME = "plan-tree"
@@ -24,6 +24,7 @@ CORE_FILES = [
 CORE_DIRS = [
     "references",
     "assets",
+    "prompts",
 ]
 
 PROVIDER_DIRS = {
@@ -31,6 +32,13 @@ PROVIDER_DIRS = {
     "opencode": lambda: Path.home() / ".config" / "opencode" / "skill" / SKILL_NAME,
     "codex": lambda: Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "skills" / SKILL_NAME,
 }
+PROVIDER_INSTRUCTION_FILES = {
+    "claude": lambda: Path.home() / ".claude" / "CLAUDE.md",
+    "opencode": lambda: Path.home() / ".config" / "opencode" / "AGENTS.md",
+    "codex": lambda: Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "AGENTS.md",
+}
+INSTRUCTION_START = "<!-- plan-tree:instructions:start -->"
+INSTRUCTION_END = "<!-- plan-tree:instructions:end -->"
 SUPPORTED_PROVIDERS = [*PROVIDER_DIRS.keys(), "all"]
 
 
@@ -73,6 +81,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     install.add_argument("--force", action="store_true", help="Replace an existing install directory.")
     install.add_argument("--dry-run", action="store_true", help="Print planned actions without writing files.")
+    install.add_argument(
+        "--no-instructions",
+        action="store_true",
+        help="Install only the skill and leave the provider's persistent instruction file unchanged.",
+    )
 
     subparsers.add_parser("version", help="Print the installer version")
     return parser.parse_args(argv)
@@ -89,7 +102,11 @@ def main(argv: list[str] | None = None) -> int:
         except RuntimeError as exc:
             print(str(exc), file=sys.stderr)
             return 2
-        return install(args)
+        try:
+            return install(args)
+        except (OSError, RuntimeError) as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
     print("Use `plan-tree install claude|opencode|codex|all`.")
     print(f"README: {README_URL}")
     return 2
@@ -119,8 +136,20 @@ def install(args: argparse.Namespace) -> int:
 
     try:
         validate_source(source)
+        if not args.dry_run:
+            for provider, target in targets:
+                preflight_skill_target(target.expanduser(), args.force)
+                if not args.no_instructions:
+                    preflight_instruction_target(PROVIDER_INSTRUCTION_FILES[provider]().expanduser())
         for provider, target in targets:
             install_to_provider(source, target.expanduser(), provider, args.force, args.dry_run)
+            if not args.no_instructions:
+                install_provider_instructions(
+                    source,
+                    PROVIDER_INSTRUCTION_FILES[provider]().expanduser(),
+                    provider,
+                    args.dry_run,
+                )
         if not args.dry_run:
             print(f"Read the README: {README_URL}")
     finally:
@@ -148,9 +177,35 @@ def download_source(version: str, temp_root: Path) -> Path:
 def validate_source(source: Path) -> None:
     missing = [name for name in CORE_FILES if not (source / name).is_file()]
     missing += [name for name in CORE_DIRS if not (source / name).is_dir()]
+    missing += [
+        f"prompts/{provider}.md"
+        for provider in PROVIDER_DIRS
+        if not (source / "prompts" / f"{provider}.md").is_file()
+    ]
     if missing:
         joined = ", ".join(missing)
         raise RuntimeError(f"{source} is not a valid plan-tree source; missing: {joined}")
+    empty_prompts = [
+        f"prompts/{provider}.md"
+        for provider in PROVIDER_DIRS
+        if not read_utf8(source / "prompts" / f"{provider}.md").strip()
+    ]
+    if empty_prompts:
+        joined = ", ".join(empty_prompts)
+        raise RuntimeError(f"{source} is not a valid plan-tree source; empty provider prompts: {joined}")
+
+
+def preflight_skill_target(target: Path, force: bool) -> None:
+    if target.exists() and not force:
+        raise RuntimeError(f"{target} already exists. Use --force to replace it.")
+
+
+def preflight_instruction_target(target: Path) -> None:
+    resolved = resolve_instruction_target(target)
+    if resolved.exists() and not resolved.is_file():
+        raise RuntimeError(f"{target} is not a regular provider instruction file.")
+    if resolved.is_file():
+        managed_block_span(read_utf8(resolved, display=target), target)
 
 
 def install_to_provider(source: Path, target: Path, provider: str, force: bool, dry_run: bool) -> None:
@@ -180,6 +235,102 @@ def install_to_provider(source: Path, target: Path, provider: str, force: bool, 
             shutil.copy2(src, dst)
 
     print(f"Installed plan-tree {read_version(target)}")
+
+
+def install_provider_instructions(source: Path, target: Path, provider: str, dry_run: bool) -> None:
+    prompt = read_utf8(source / "prompts" / f"{provider}.md").strip()
+    if not prompt:
+        raise RuntimeError(f"Provider prompt is empty: prompts/{provider}.md")
+
+    resolved = resolve_instruction_target(target)
+    action = "update" if resolved.is_file() else "create"
+    print(f"Persistent instructions for {provider} -> {target}")
+    if dry_run:
+        print(f"  would {action} managed Plan Tree block")
+        return
+
+    existing = read_utf8(resolved, display=target) if resolved.is_file() else ""
+    updated = merge_managed_instructions(existing, prompt, target)
+    if updated == existing:
+        print("Persistent instructions already current")
+        return
+
+    atomic_write_text(resolved, updated)
+    print(f"{action.capitalize()}d persistent instructions")
+
+
+def resolve_instruction_target(target: Path) -> Path:
+    if not target.is_symlink():
+        return target
+    try:
+        return target.resolve(strict=True)
+    except FileNotFoundError as exc:
+        raise RuntimeError(f"{target} is a dangling symbolic link; repair it before installing.") from exc
+
+
+def read_utf8(path: Path, display: Path | None = None) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise RuntimeError(f"{display or path} is not valid UTF-8; convert it before installing.") from exc
+
+
+def managed_block_span(content: str, target: Path) -> tuple[int, int] | None:
+    starts = content.count(INSTRUCTION_START)
+    ends = content.count(INSTRUCTION_END)
+    if starts == 0 and ends == 0:
+        return None
+    if starts != 1 or ends != 1:
+        raise RuntimeError(
+            f"{target} has ambiguous Plan Tree instruction markers; repair them manually before installing."
+        )
+
+    start = content.index(INSTRUCTION_START)
+    end_start = content.index(INSTRUCTION_END)
+    if end_start < start:
+        raise RuntimeError(
+            f"{target} has reversed Plan Tree instruction markers; repair them manually before installing."
+        )
+    return start, end_start + len(INSTRUCTION_END)
+
+
+def merge_managed_instructions(existing: str, prompt: str, target: Path) -> str:
+    newline = "\r\n" if "\r\n" in existing else "\n"
+    normalized_prompt = newline.join(prompt.splitlines())
+    block = newline.join((INSTRUCTION_START, normalized_prompt, INSTRUCTION_END))
+    span = managed_block_span(existing, target)
+    if span is not None:
+        start, end = span
+        return f"{existing[:start]}{block}{existing[end:]}"
+    if not existing:
+        return f"{block}{newline}"
+
+    if existing.endswith(newline * 2):
+        separator = ""
+    elif existing.endswith(newline):
+        separator = newline
+    else:
+        separator = newline * 2
+    return f"{existing}{separator}{block}{newline}"
+
+
+def atomic_write_text(target: Path, content: str) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    existing_mode = target.stat().st_mode if target.exists() else None
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{target.name}.plan-tree-",
+        dir=target.parent,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as handle:
+            handle.write(content)
+        if existing_mode is not None:
+            os.chmod(temporary, existing_mode)
+        os.replace(temporary, target)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def read_version(target: Path) -> str:

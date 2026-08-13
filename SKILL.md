@@ -61,7 +61,7 @@ Default shape:
 
 - `docs/plantree/README.md`: registry, authority order, baseline link, active plans table, and how to read the tree.
 - `docs/plantree/baseline/`: project-wide context such as module map, runtime flows, state/storage boundaries, test/release gates, and risk hotspots.
-- `docs/plantree/plans/<plan-name>/`: specific plan roots with roadmap/status, topics, decisions, open questions, evidence, indexes, and optional history.
+- `docs/plantree/plans/<NNN>-<plan-name>/`: specific plan roots with stable numeric ordering, roadmap/status, topics, decisions, open questions, evidence, indexes, and optional history when the project has no established naming convention.
 - `docs/plantree/ideas/inbox.md`: low-commitment idea inbox.
 
 Discovery order:
@@ -71,7 +71,7 @@ Discovery order:
 3. Else preserve another clearly active established tree for the current task; assess migration only when the user asks to adopt, normalize, or migrate it.
 4. Else bootstrap `docs/plantree/` before creating or updating a plan.
 
-New specific plans default to `docs/plantree/plans/<plan-name>/`, must be registered in `docs/plantree/README.md`, and should link to the relevant baseline files instead of copying global context.
+New specific plans default to `docs/plantree/plans/<NNN>-<plan-name>/` when no local convention exists, must be registered in `docs/plantree/README.md`, and should link to the relevant baseline files instead of copying global context. Preserve established unnumbered or differently organized trees unless the user explicitly approves migration.
 
 ## First Use
 
@@ -89,7 +89,7 @@ Keep bootstrap content lightweight and evidence-based. If not enough code has be
 
 Use these roles when creating or maintaining a plan root, adapting names to local convention:
 
-- `README.md`: scope, authority, file map, reading path, and active registry when it is the plantree root. For active plan tables, prefer `Plan | Status | Current Phase | Last Landed | Next Target`.
+- `README.md`: scope, authority, file map, reading path, and active registry when it is the plantree root. For active Plan tables, prefer `ID | Plan | Affected Modules | Status | Current Phase | Last Landed | Next Target` when lightweight IDs are in use.
 - `roadmap.md`: durable state grouped as `Done`, `In Progress`, `Next`, and `Deferred` unless the tree already uses another model.
 - `implementation-status.md`: short operational handoff for `In Progress` plans only. Planning or deferred plans usually do not need this file.
 - `open-questions.md`: unresolved questions only.
@@ -102,11 +102,28 @@ Use these roles when creating or maintaining a plan root, adapting names to loca
 
 Read `references/maintenance-patterns.md` when creating templates, handling large trees, maintaining decision/status/handoff/history/index files, adding repo hygiene plans, or needing the detailed final-check checklist.
 
+## Lightweight IDs And Module Classification
+
+When a project has no established Plan naming convention, use lightweight IDs to improve filesystem scanning and durable references without creating a task database:
+
+- Allocate Plan IDs project-wide as `P001`, `P002`, and so on. Map `P001` to a flat root such as `docs/plantree/plans/001-authentication/`.
+- Use fixed-width three-digit decimal numbers. Allocate the maximum retained Plan number plus one; never reuse an ID, close gaps by renumbering, or encode priority, status, module, owner, worker, phase, or date.
+- Keep the semantic slug stable and lowercase kebab-case. A title or affected module may change without changing the Plan ID or directory.
+- While the Plan registry is small, keep identity and lifecycle registration in `docs/plantree/README.md`. Split it into an index only when that improves retrieval; do not maintain a parallel allocation ledger by default.
+- Roadmap task IDs such as `T001` are optional and Plan-local. Use them only when stable cross-file references help. When present, `roadmap.md` is the sole active authority for task identity, status, and order; do not create a separate task registry or task folder by default.
+- Decision filenames may retain the `001-<decision>.md` convention. Open questions may use `Q001` when durable references help. Ideas remain unnumbered until promoted.
+- Treat code or product modules as Plan metadata such as `Affected Modules`, using stable keys defined in `baseline/module-map.md`. Keep Plan roots flat by default; add module indexes or physical module directories only after demonstrated navigation need and a recorded decision.
+- Apply same-change consistency: update the authoritative file and any required entrypoint summary in one maintenance change, then check IDs, paths, module keys, roadmap uniqueness, status claims, and relative links before finishing.
+- Prefer read-only drift detection over automatic repair. Do not add watchers, automatic renumbering, allocation locks, or recovery journals until observed coordination failures justify their cost.
+
+These defaults are progressive. Preserve a mature tree's local ID, issue, ticket, or folder convention instead of layering a competing namespace on top.
+
 ## Dynamic Status And Evidence
 
 - Only `In Progress` plans need `implementation-status.md`; `Planning` plans should express readiness in `roadmap.md`, topics, open questions, or decisions.
 - Keep `implementation-status.md` operational and short. Prefer under 100 lines; if it grows, archive or index old detail.
 - Keep `Active TODO` to at most five current items. More items usually means the work needs a roadmap phase, topic, or split.
+- When roadmap task IDs are used, reuse those IDs in `Active TODO` rather than restating task identity in a second registry.
 - Include concrete `Current Phase`, `Next Target`, `Last Landed`, `Active TODO`, `Blocked By`, and `Last Verified` or handoff notes when applicable.
 - `Last Landed` should point to a commit, artifact, test result, accepted checkpoint, or other evidence with a date when available.
 - Use `evidence/README.md`, `indexes/evidence-map.md`, or the local equivalent for phase/package/gate-level evidence. Use `history/evidence-index.md` only for superseded evidence archives. Do not record every small step there.
@@ -150,13 +167,15 @@ Safe default sequence: inventory old roots and oversized files, classify content
 - Add a second plan root only when the scope is independent enough that merging it would blur ownership, authority, or retrieval.
 - Name plan roots after stable project content, not dates, workers, review rounds, or one-off tasks.
 - Do not scatter unregistered plan folders across the repo or create a new plan root for every task.
-- Folder names should represent stable domains or document roles. Add durable folders only when the grouping has proven useful, then update the nearest index.
+- Numbered Plan roots remain flat under `plans/` by default so module reclassification does not move paths. Folder names should represent stable domains or document roles. Add durable grouping folders only when the grouping has proven useful, then record the choice and update the nearest index.
 - Keep project-wide context in `docs/plantree/baseline/`; specific plan roots should link to it.
 
 ## Editing Rules
 
 - Inventory before editing; touch the minimum files needed to keep the tree coherent.
 - Before appending substantial content, classify it as current state, topic capsule, detail shard, decision, evidence, history, open question, or idea.
+- Keep one authority per fact. In a numbered tree, the root Plan registry owns Plan identity/lifecycle, each Plan README owns scope and affected modules, and `roadmap.md` owns task identity/status/order.
+- When creating a numbered Plan, add its directory and root registry row in the same change. When changing task state or affected modules, preserve the Plan and task IDs.
 - Preserve headings, language, naming style, and chronological order unless they actively prevent clarity.
 - Link active tasks to roadmap items, topics, decisions, issues, commits, artifacts, or verification evidence when available.
 - Mark work `Done` only when the artifact exists or the user explicitly says it is complete.
@@ -193,6 +212,9 @@ Before replying after edits or an audit, confirm:
 - Open questions contain unresolved questions only; promoted ideas are marked and linked.
 - Relative Markdown links introduced or touched by the edit still resolve.
 - Decisions, roadmap state, implementation TODOs, and topic notes do not contradict each other.
+- Numbered Plan IDs are unique, match their directory prefixes and local README metadata, and remain registered after archive or retirement.
+- Optional roadmap task IDs are unique within their Plan and are not duplicated into a separate active task ledger.
+- Affected module keys resolve through the baseline module map; changing module metadata did not move or duplicate a Plan root.
 - Completed work has plan-to-landing evidence when evidence is available.
 - Migration work registers or bridges legacy roots and does not delete or rename old files without a written decision and rollback/source note.
 - Repo cleanup work has inventory, owner decision, archive/delete rules, safety checks, and rollback notes.
@@ -207,4 +229,5 @@ Do not create a large framework when a short roadmap update or one decision reco
 - Do not mass-migrate or delete older plan trees in one pass; bridge first, then migrate coherent active scopes.
 - Do not treat open questions as tasks.
 - Do not turn implementation status into a second roadmap or event log.
+- Do not turn lightweight numbering into a transactional task manager or silently repair ambiguous identity conflicts.
 - Do not hide tradeoffs to make the tree look cleaner.
