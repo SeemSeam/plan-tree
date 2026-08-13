@@ -14,4 +14,4 @@ Updated: 2026-08-13
 
 ## In Progress
 
-- **T006 — Publish and verify.** The user authorized GitHub-first staged publication. Land the revised workflow, tag `v0.4.0`, verify the bilingual GitHub Release, then publish and independently verify npm, PyPI, and fresh installs.
+- **T006 — Publish and verify.** The revised workflow, immutable `v0.4.0` tag, and bilingual GitHub Release are published and verified. The npm package inspection passed, but `npm publish` returned a permission-related `E404`, so PyPI was safely skipped. Correct npm Trusted Publisher or package authorization, rerun registry publication without moving the tag, then verify both registries and fresh installs. See the [GitHub Release evidence](evidence/2026-08-13-v0.4.0-github-release.md).

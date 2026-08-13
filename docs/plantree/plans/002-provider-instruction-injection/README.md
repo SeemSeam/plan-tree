@@ -40,8 +40,9 @@ Release publication is intentionally staged. After validation, the immutable tag
 3. [Managed global instruction decision](decisions/001-managed-global-provider-instructions.md)
 4. [GitHub-first staged release decision](decisions/002-github-release-before-registries.md)
 5. [Implementation status](implementation-status.md)
-6. [Release-candidate evidence](evidence/2026-08-13-v0.4.0-release-candidate.md)
+6. [GitHub Release evidence](evidence/2026-08-13-v0.4.0-github-release.md)
+7. [Release-candidate evidence](evidence/2026-08-13-v0.4.0-release-candidate.md)
 
 ## Readiness
 
-Implementation and release preparation are complete. The user explicitly authorized GitHub-first staged publication on 2026-08-13. There is no remaining blocker to creating `v0.4.0` and its GitHub Release; registry completion remains gated on successful Trusted Publishing.
+The immutable `v0.4.0` tag and bilingual GitHub Release are published and verified. npm publication reached `npm publish` but returned a permission-related `E404`; PyPI was correctly skipped because it depends on npm. The Plan remains in progress until registry authorization, publication, and clean installs are verified.
