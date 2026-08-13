@@ -17,7 +17,7 @@ Make a normal `plan-tree install <provider>` install the skill and a concise pro
 - Marker-bounded, idempotent updates that preserve all user-owned content.
 - Equivalent behavior in the Python and npm installers.
 - An explicit `--no-instructions` opt-out and read-only dry-run reporting.
-- A synchronized `0.4.0` release to npm, PyPI, and GitHub with bilingual notes.
+- A staged `0.4.0` release with bilingual GitHub notes first and independently verified npm and PyPI publication afterward.
 
 ## Non-Goals
 
@@ -31,14 +31,17 @@ Make a normal `plan-tree install <provider>` install the skill and a concise pro
 
 Provider instruction files are the supported durable surface: `~/.claude/CLAUDE.md` for Claude Code, `~/.config/opencode/AGENTS.md` for OpenCode, and `$CODEX_HOME/AGENTS.md` for Codex. Each installer appends or replaces only one Plan Tree managed block, while preserving surrounding content byte-for-byte apart from necessary trailing separation.
 
+Release publication is intentionally staged. After validation, the immutable tag and bilingual GitHub Release become available before registry publication. npm and PyPI remain separately verified delivery surfaces and must not be described as published until their registries expose `0.4.0`.
+
 ## Reading Path
 
 1. [Roadmap](roadmap.md)
 2. [Provider instruction contract](topics/provider-instruction-contract.md)
 3. [Managed global instruction decision](decisions/001-managed-global-provider-instructions.md)
-4. [Implementation status](implementation-status.md)
-5. [Release-candidate evidence](evidence/2026-08-13-v0.4.0-release-candidate.md)
+4. [GitHub-first staged release decision](decisions/002-github-release-before-registries.md)
+5. [Implementation status](implementation-status.md)
+6. [Release-candidate evidence](evidence/2026-08-13-v0.4.0-release-candidate.md)
 
 ## Readiness
 
-Implementation and release preparation are complete. The verified `0.4.0` source commit is on `origin/main`, and GitHub recognizes the tag-triggered release workflow. Publication remains gated on confirming npm Trusted Publisher configuration before creating the tag.
+Implementation and release preparation are complete. The user explicitly authorized GitHub-first staged publication on 2026-08-13. There is no remaining blocker to creating `v0.4.0` and its GitHub Release; registry completion remains gated on successful Trusted Publishing.

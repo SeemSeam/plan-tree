@@ -89,6 +89,24 @@ class PlanTreeContractTests(unittest.TestCase):
         self.assertRegex(version, r"^\d+\.\d+\.\d+$")
         self.assertEqual({version}, set(surfaces.values()), f"version drift: {surfaces}")
 
+    def test_release_workflow_stages_github_before_registries(self) -> None:
+        workflow = read(ROOT / ".github" / "workflows" / "release.yml")
+
+        def needs(job: str) -> str:
+            match = re.search(
+                rf"(?ms)^  {re.escape(job)}:\n(?P<body>.*?)(?=^  [a-z][a-z0-9-]*:\n|\Z)",
+                workflow,
+            )
+            self.assertIsNotNone(match, f"missing release job: {job}")
+            dependency = re.search(r"(?m)^    needs:\s*(\S+)\s*$", match.group("body"))
+            self.assertIsNotNone(dependency, f"missing release dependency: {job}")
+            return dependency.group(1)
+
+        self.assertEqual("validate", needs("github-release"))
+        self.assertEqual("github-release", needs("npm"))
+        self.assertEqual("npm", needs("pypi"))
+        self.assertIn("GitHub Release already exists and contains bilingual notes.", workflow)
+
     def test_plan_directories_are_flat_numbered_and_registered(self) -> None:
         registry = plan_registry()
         seen: dict[str, Path] = {}

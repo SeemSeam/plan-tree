@@ -50,9 +50,44 @@ jobs:
         env:
           PYTHONPATH: src
 
+  github-release:
+    name: Create GitHub Release
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create or verify bilingual GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          notes_file="docs/releases/$GITHUB_REF_NAME.md"
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            release_body="$(mktemp)"
+            trap 'rm -f "$release_body"' EXIT
+            gh release view "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json body \
+              --jq .body > "$release_body"
+            grep -Fxq '## English' "$release_body"
+            grep -Fxq '## 中文' "$release_body"
+            echo "GitHub Release already exists and contains bilingual notes."
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --fail-on-no-commits \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file "$notes_file"
+          fi
+
   npm:
     name: Publish to npm
-    needs: validate
+    needs: github-release
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -98,23 +133,3 @@ jobs:
 
       - name: Publish Python distributions
         uses: pypa/gh-action-pypi-publish@release/v1
-
-  github-release:
-    name: Create GitHub Release
-    needs: pypi
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Create bilingual GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --fail-on-no-commits \
-            --title "$GITHUB_REF_NAME" \
-            --notes-file "docs/releases/$GITHUB_REF_NAME.md"

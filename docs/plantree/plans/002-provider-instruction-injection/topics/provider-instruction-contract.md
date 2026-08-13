@@ -4,7 +4,7 @@ Date: 2026-08-13
 Role: contract
 Status: accepted
 Read when: changing installer behavior, prompt payloads, or release gates
-Related: [decision 001](../decisions/001-managed-global-provider-instructions.md), [roadmap](../roadmap.md)
+Related: [decision 001](../decisions/001-managed-global-provider-instructions.md), [decision 002](../decisions/002-github-release-before-registries.md), [roadmap](../roadmap.md)
 
 ## Provider Targets
 
@@ -47,4 +47,4 @@ The files are provider-loaded persistent context, not an immutable provider syst
 
 ## Release Gate
 
-Use tag-triggered `validate → npm → PyPI → GitHub Release` ordering. npm must use Trusted Publishing without `NODE_AUTH_TOKEN`; PyPI retains its existing trusted `pypi` environment. The tag is blocked until npm trusts owner `SeemSeam`, repository `plan-tree`, workflow `release.yml`, blank environment, and action `npm publish`.
+Use tag-triggered `validate → GitHub Release → npm → PyPI` ordering. The GitHub job must safely accept an already-existing bilingual Release so a later registry-recovery rerun does not duplicate or overwrite it. npm must use Trusted Publishing without `NODE_AUTH_TOKEN`; PyPI retains its existing trusted `pypi` environment. npm availability remains blocked until it trusts owner `SeemSeam`, repository `plan-tree`, workflow `release.yml`, blank environment, and action `npm publish`; that registry gate does not block the tag or GitHub Release.

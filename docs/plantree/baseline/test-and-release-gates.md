@@ -10,7 +10,8 @@ Updated: 2026-08-13
 - npm and PyPI expose equivalent `plan-tree` installers through separate implementations.
 - Public releases synchronize `VERSION`, `package.json`, `pyproject.toml`, and both CLI constants.
 - Installer tests exercise both CLIs against isolated provider homes and verify instruction preservation, idempotency, opt-out, dry-run, malformed-marker rejection, and official target paths.
-- Tag releases validate source and bilingual notes, then publish in `npm → PyPI → GitHub Release` order through registry OIDC.
+- Tag releases validate source and bilingual notes, then create or verify the GitHub Release before publishing in `npm → PyPI` order through registry OIDC.
+- GitHub Release availability and registry availability are verified independently; a staged release must not imply that npm or PyPI already exposes the version.
 
 ## Numbering Gates
 
