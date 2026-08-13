@@ -6,11 +6,10 @@ Status: active
 
 ## Current Phase
 
-The `0.4.0` release candidate is verified. Commit and push the exact reviewed source, then clear the npm Trusted Publisher gate before creating the tag.
+The `0.4.0` release candidate is verified and source commit `dd9031f` is on `origin/main`. Clear the npm Trusted Publisher gate before creating the tag.
 
 ## Active TODO
 
-- T006 — Commit and push the release candidate.
 - T006 — Confirm npm trusts `SeemSeam/plan-tree`, workflow `release.yml`, blank environment, for `npm publish`.
 - T006 — Create and push `v0.4.0`, then verify npm, PyPI, GitHub Release, workflow, and fresh installs.
 
@@ -21,6 +20,7 @@ The `0.4.0` release candidate is verified. Commit and push the exact reviewed so
 - T003 — Implemented provider prompt payloads and safe managed-block mutation in both CLIs.
 - T004 — Added and passed the cross-provider installer safety suite.
 - T005 — Prepared and verified version metadata, docs, workflow, packages, and [bilingual notes](../../../releases/v0.4.0.md).
+- T006 — Committed release source as `dd9031f`, pushed it to `origin/main`, and confirmed GitHub recognizes `release.yml`.
 
 ## Blockers
 
@@ -28,7 +28,7 @@ Publication only: an unauthenticated `npm trust list plan-tree --json` returned 
 
 ## Next Commit Target
 
-Commit the exact tested `0.4.0` implementation and release preparation, excluding unrelated `docs/papers/` files, and push it to `origin/main`.
+After npm trust is confirmed, create `v0.4.0` at the exact reviewed remote `main` commit and let the tag workflow publish in dependency order.
 
 ## Last Verified
 
@@ -36,6 +36,7 @@ Commit the exact tested `0.4.0` implementation and release preparation, excludin
 - Python wheel, sdist, and npm tarball pass metadata, allowlist, isolated-install, and provider-injection checks.
 - Bilingual release notes, Node syntax, local links, version synchronization, and whitespace checks pass.
 - Full commands and candidate checksums are recorded in [release-candidate evidence](evidence/2026-08-13-v0.4.0-release-candidate.md).
+- GitHub accepted `dd9031fbc645ac87fcdb9edf0d7d33a3808b0932` on `main` and displays the committed release workflow.
 
 ## Handoff Notes
 

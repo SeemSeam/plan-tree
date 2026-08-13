@@ -14,4 +14,4 @@ Updated: 2026-08-13
 
 ## In Progress
 
-- **T006 — Publish and verify.** Commit and push reviewed source, verify npm trust, tag `v0.4.0`, then verify GitHub, npm, PyPI, and fresh installs.
+- **T006 — Publish and verify.** Source commit `dd9031f` is on `origin/main` and GitHub recognizes the release workflow. Verify npm trust, tag `v0.4.0`, then verify GitHub, npm, PyPI, and fresh installs.

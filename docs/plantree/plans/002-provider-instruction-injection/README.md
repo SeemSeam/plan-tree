@@ -41,4 +41,4 @@ Provider instruction files are the supported durable surface: `~/.claude/CLAUDE.
 
 ## Readiness
 
-Implementation and release preparation are complete. The verified `0.4.0` candidate passes source, package, clean-install, and bilingual-note gates. Publication remains gated on committing and pushing the reviewed source, then confirming npm Trusted Publisher configuration before creating the tag.
+Implementation and release preparation are complete. The verified `0.4.0` source commit is on `origin/main`, and GitHub recognizes the tag-triggered release workflow. Publication remains gated on confirming npm Trusted Publisher configuration before creating the tag.
